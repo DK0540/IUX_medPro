@@ -502,8 +502,7 @@ const handleSearchInputChange = (event) => {
           }}
         />
         <button className="submit-button" onClick={() => setSearch("")}>
-        Clear 
-       </button>
+        Clear</button>
         {showPopup && (
           <div className="voice-popup" onClick={() => setShowPopup(false)} >
             <VoicePopup onClose={() => setShowPopup(false)} />
