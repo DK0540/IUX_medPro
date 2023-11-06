@@ -183,53 +183,74 @@ function ServiceRiskReport() {
       ],
       additionalData: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     },
-    // {
-    //   name: "Cello Protecs 80000U 6x0 8ml SYR AUS",
-    //   dates: [
-    //     "04 Sep",
-    //     "11 Sep",
-    //     "18 Sep",
-    //     "25 Sep",
-    //     "02 Oct",
-    //     "09 Oct",
-    //     "16 Oct",
-    //     "23 Oct",
-    //     "30 Oct",
-    //     "06 Nov",
-    //     "13 Nov",
-    //     "20 Nov",
-    //     "27 Nov",
-    //     "04 Dec",
-    //   ],
-    //   additionalData: [60, 53, 46, 72, 65, 58, 50, 47, 53, 64, 57, 49, 43, 37],
-    // },
-  
   ];
+
 
   useEffect(() => {
     if (search.trim() === "") {
-      setFilteredData(medicineData); 
+      setFilteredData(medicineData);
+    } else {
+      const filterKeyword = extractFilterKeyword(search);
+  
+      if (filterKeyword) {
+        // e.preventDefault()
+        filterData(filterKeyword);
+      } else {
+        const filteredResults = medicineData.filter((medicine) =>
+          medicine.name.toLowerCase().includes(search.toLowerCase())
+        );
+        setFilteredData(filteredResults); 
+      }
     }
-  }, [search, medicineData]);
+  }, [search, medicineData]);
+
+  // useEffect(() => {
+  //   if (search.trim() === "") {
+  //     setFilteredData(medicineData); 
+  //   }
+  // }, [search, medicineData]);
+
+  //old handle voice without direct search=======>>>
+  // const handleVoiceInput = () => {
+  //   setShowPopup(true);
+  //   setIsBlinking(!isBlinking);
+  //   if ("webkitSpeechRecognition" in window) {
+  //     const recognition = new window.webkitSpeechRecognition();
+  //     recognition.onresult = (event) => {
+  //       const speechToText = event.results[0][0].transcript;
+  //       setSearch(speechToText);
+
+        
+  //       filterData(speechToText);
+  //       setShowPopup(true);
+  //     };
+  //     recognition.start();
+  //   } else {
+  //     console.error("Speech recognition is not supported in this browser.");
+  //   }
+  // };
+
 
   const handleVoiceInput = () => {
     setShowPopup(true);
     setIsBlinking(!isBlinking);
+  
     if ("webkitSpeechRecognition" in window) {
       const recognition = new window.webkitSpeechRecognition();
       recognition.onresult = (event) => {
         const speechToText = event.results[0][0].transcript;
         setSearch(speechToText);
-
-        
-        filterData(speechToText);
+        const filteredResults = medicineData.filter((medicine) =>
+          medicine.name.toLowerCase().includes(speechToText.toLowerCase())
+        );
+        setFilteredData(filteredResults);
         setShowPopup(false);
       };
       recognition.start();
     } else {
       console.error("Speech recognition is not supported in this browser.");
-    }
-  };
+    }
+  };
   
 
 
@@ -480,11 +501,11 @@ const handleSearchInputChange = (event) => {
             setSearch(e.target.value);
           }}
         />
-        <button className="submit-button" onClick={handleButtonClick}>
-          Submit
-        </button>
+        <button className="submit-button" onClick={() => setSearch("")}>
+        Clear 
+       </button>
         {showPopup && (
-          <div className="voice-popup">
+          <div className="voice-popup" onClick={() => setShowPopup(false)} >
             <VoicePopup onClose={() => setShowPopup(false)} />
           </div>
         )}
